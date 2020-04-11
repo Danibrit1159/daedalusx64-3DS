@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <dirent.h>
 
 #include <3ds.h>
 #include <GL/picaGL.h>
@@ -28,9 +29,9 @@
 #include "Utility/Thread.h"
 #include "Utility/Translate.h"
 #include "Utility/Timer.h"
+#include "Utility/ROMFile.h"
 
 #define DAEDALUS_CTR_PATH(p)	"sdmc:/3ds/DaedalusX64/" p
-#define LOAD_ROM	DAEDALUS_CTR_PATH("mario.z64")
 
 /*extern "C" {
 
@@ -79,12 +80,74 @@ void HandleEndOfFrame()
 		CPU_Halt("Exiting");
 }
 
+const char *SelectRom()
+{
+	std::vector<std::string> files = {};
+
+	std::string			full_path;
+
+	IO::FindHandleT		find_handle;
+	IO::FindDataT		find_data;
+	
+	if(IO::FindFileOpen( DAEDALUS_CTR_PATH("Roms/"), &find_handle, find_data ))
+	{
+		do
+		{
+			const char * rom_filename( find_data.Name );
+
+			if(IsRomfilename( rom_filename ))
+			{
+				files.push_back(rom_filename);
+			}
+		}
+
+		while(IO::FindFileNext( find_handle, find_data ));
+
+		IO::FindFileClose( find_handle );
+	}
+
+	if(files.size() == 0)
+		return nullptr;
+
+	int cursor = 0;
+
+	while(aptMainLoop())
+	{
+		hidScanInput();
+
+		printf("\x1b[1;1H");
+
+		for(int i = 0; i < files.size(); i++)
+		{
+			if(cursor == i)
+				printf("\x1b[34m%s\x1b[0m\n", files.at(i).c_str());
+			else
+				printf("%s\n", files.at(i).c_str());
+		}
+
+		if((hidKeysDown() & KEY_DOWN) && cursor != files.size() - 1)
+			cursor++;
+		if((hidKeysDown() & KEY_UP) && cursor != 0)
+			cursor--;
+		if(hidKeysDown() & KEY_A)
+			return files.at(cursor).c_str();
+	}
+
+}
+
 int main(int argc, char* argv[])
 {
 
 	Initialize();
 
-	System_Open(LOAD_ROM);
+
+	const char *rom = SelectRom();
+	
+	char fullpath[512];
+
+	sprintf(fullpath, "%s%s", DAEDALUS_CTR_PATH("Roms/"), rom);
+
+	System_Open(fullpath);
 
 	CPU_Run();
 
