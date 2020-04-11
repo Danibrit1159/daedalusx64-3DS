@@ -510,14 +510,14 @@ void BaseRenderer::FlushTris()
 	TempVerts temp_verts;
 
 	// If any bit is set here it means we have to clip the trianlges since PSP HW clipping sux!
+	#ifdef DAEDALUS_PSP
 	if(mVtxClipFlagsUnion != 0)
 	{
 		PrepareTrisClipped( &temp_verts );
 	}
 	else
-	{
+	#endif
 		PrepareTrisUnclipped( &temp_verts );
-	}
 
 	// No vertices to render? //Corn
 	if( temp_verts.Count == 0 )
