@@ -401,7 +401,7 @@ void IPreferences::SetRomPreferences( const RomID & id, const SRomPreferences & 
 }
 
 SGlobalPreferences::SGlobalPreferences()
-:	DisplayFramerate( 0 )
+:	DisplayFramerate( 1 )
 #ifdef DAEDALUS_DEBUG_DISPLAYLIST
 ,	HighlightInexactBlendModes( false )
 ,	CustomBlendModes( true )

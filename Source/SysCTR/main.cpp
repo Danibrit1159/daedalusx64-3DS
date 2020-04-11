@@ -75,7 +75,7 @@ static void Initialize()
 
 void HandleEndOfFrame()
 {
-	if(hidKeysDown() == KEY_ZL)
+	if(hidKeysHeld() == KEY_SELECT)
 		CPU_Halt("Exiting");
 }
 
@@ -139,7 +139,6 @@ int main(int argc, char* argv[])
 
 	Initialize();
 
-
 	const char *rom = SelectRom();
 	
 	char fullpath[512];
@@ -148,6 +147,8 @@ int main(int argc, char* argv[])
 
 	System_Open(fullpath);
 
+	consoleClear();
+	
 	CPU_Run();
 
 	System_Close();

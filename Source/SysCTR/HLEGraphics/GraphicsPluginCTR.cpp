@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-
+#include <stdio.h>
 #include "stdafx.h"
 
 #include "Debug/DBGConsole.h"
@@ -198,26 +198,14 @@ void CGraphicsPluginImpl::UpdateScreen()
 		{
 			if( gGlobalPreferences.DisplayFramerate )
 			{
-				//pspDebugScreenSetTextColor( 0xffffffff );
-				//pspDebugScreenSetBackColor(0);
-				//pspDebugScreenSetXY(0, 0);
-				/*
+				printf("\x1b[1;1H");
+				
 				switch(gGlobalPreferences.DisplayFramerate)
 				{
 					case 1:
-						pspDebugScreenPrintf( "%#.1f  ", gCurrentFramerate );
+						printf( "%#.1f  ", gCurrentFramerate );
 						break;
-					case 2:
-						pspDebugScreenPrintf( "FPS[%#.1f] VB[%d/%d] Sync[%#.1f%%]   ", gCurrentFramerate, u32( Fsync * f32( FramerateLimiter_GetTvFrequencyHz() ) ), FramerateLimiter_GetTvFrequencyHz(), Fsync * 100.0f );
-						break;
-					case 3:
-#ifdef DAEDALUS_DEBUG_DISPLAYLIST
-						pspDebugScreenPrintf( "Dlist[%d] Cull[%d] | Tris[%d] Cull[%d] | Rect[%d] Clip[%d] ", gNumInstructionsExecuted, gNumDListsCulled, gRenderer->GetNumTrisRendered(), gRenderer->GetNumTrisClipped(), gRenderer->GetNumRect(), gNumRectsClipped);
-#else
-						pspDebugScreenPrintf( "%#.1f  ", gCurrentFramerate );
-#endif
-						break;
-				}*/
+				}
 			}
 			if(gTakeScreenshot)
 			{
@@ -260,7 +248,7 @@ void CGraphicsPluginImpl::UpdateScreen()
 void CGraphicsPluginImpl::RomClosed()
 {
 	#ifdef DAEDALUS_DEBUG_CONSOLE
-	DBGConsole_Msg(0, "Finalising VitaGraphics");
+	DBGConsole_Msg(0, "Finalising Graphics");
 	#endif
 	DLParser_Finalise();
 	CTextureCache::Destroy();
@@ -270,7 +258,7 @@ void CGraphicsPluginImpl::RomClosed()
 CGraphicsPlugin * CreateGraphicsPlugin()
 {
 	#ifdef DAEDALUS_DEBUG_CONSOLE
-	DBGConsole_Msg( 0, "Initialising Graphics Plugin [CVita]" );
+	DBGConsole_Msg( 0, "Initialising Graphics Plugin [3DS]" );
 #endif
 
 	CGraphicsPluginImpl * plugin = new CGraphicsPluginImpl;

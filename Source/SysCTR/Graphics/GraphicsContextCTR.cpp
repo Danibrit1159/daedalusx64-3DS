@@ -173,6 +173,12 @@ void IGraphicsContext::EndFrame()
 void IGraphicsContext::UpdateFrame(bool wait_for_vbl)
 {
 	DAEDALUS_PROFILE( "IGraphicsContext::UpdateFrame" );
+	
+	pglSwapBuffers();
+//	if( gCleanSceneEnabled ) //TODO: This should be optional
+	{
+		ClearColBuffer( c32(0xff000000) ); // ToDo : Use gFillColor instead?
+	}
 }
 
 void IGraphicsContext::SetDebugScreenTarget(ETargetSurface buffer)

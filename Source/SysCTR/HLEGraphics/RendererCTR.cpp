@@ -214,14 +214,14 @@ void RendererCTR::PrepareRenderState(const float (&mat_project)[16], bool disabl
 	else
 	{
 		// Decal mode
-/*		if( gRDPOtherMode.zmode == 3 )
+		if( gRDPOtherMode.zmode == 3 )
 		{
 			glPolygonOffset(-1.0, -1.0);
 		}
 		else
 		{
 			glPolygonOffset(0.0, 0.0);
-		}*/
+		}
 
 		
 		// Enable or Disable ZBuffer test
