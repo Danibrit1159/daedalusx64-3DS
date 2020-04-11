@@ -34,6 +34,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <pspgu.h>
 #elif defined(DAEDALUS_VITA)
 #include <vitaGL.h>
+#elif defined(DAEDALUS_CTR)
+#include <GL/picaGL.h>
 #else
 #include "SysGL/GL.h"
 #endif
@@ -238,7 +240,7 @@ public:
 #ifdef DAEDALUS_PSP
 	inline void			SetFogMinMax(f32 fog_near, f32 fog_far)	{ sceGuFog(fog_near, fog_far, mFogColour.GetColour()); }
 	inline void			SetFogColour( c32 colour )				{ mFogColour = colour; }
-#elif defined(DAEDALUS_VITA)
+#elif defined(DAEDALUS_VITA) || defined (DAEDALUS_CTR)
 	inline void			SetFogMinMax(f32 fog_near, f32 fog_far)	{ glFogf(GL_FOG_START, fog_near); glFogf(GL_FOG_END, fog_far); }
 	inline void			SetFogColour( c32 colour )				{ float fog_clr[4] = {mFogColour.GetRf(), mFogColour.GetBf(), mFogColour.GetGf(), mFogColour.GetAf()}; glFogfv(GL_FOG_COLOR, &fog_clr[0]); }
 #endif
@@ -454,7 +456,7 @@ protected:
 	float				mScreenWidth;
 	float				mScreenHeight;
 
-#if defined(DAEDALUS_GL) || defined(DAEDALUS_VITA)
+#if defined(DAEDALUS_GL) || defined(DAEDALUS_VITA) || defined(DAEDALUS_CTR)
 	Matrix4x4			mScreenToDevice;					// Used by OSX renderer - scales screen coords (0..640 etc) to device coords (-1..+1)
 #endif
 

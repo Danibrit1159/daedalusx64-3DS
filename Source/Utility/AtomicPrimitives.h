@@ -103,6 +103,16 @@ inline u32 AtomicBitSet( volatile u32 * ptr, u32 and_bits, u32 or_bits )
 	return r;
 }
 
+#elif defined( DAEDALUS_CTR )
+
+inline u32 AtomicBitSet( volatile u32 * ptr, u32 and_bits, u32 or_bits )
+{
+	u32 r = *ptr;
+	r &= and_bits;
+	r |= or_bits;
+	*ptr = r;
+	return r;
+}
 
 #else
 

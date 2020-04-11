@@ -103,6 +103,16 @@ set (VITA_INPUTMANAGER_FILES SysVita/Input/InputManagerVita.cpp)
 set (VITA_UTILITY_FILES SysVita/Utility/ThreadVita.cpp SysVita/Utility/IOVita.cpp SysVita/Utility/TimingVita.cpp)
 set (VITA_BUILD ${VITA_DEBUG_FILES} ${VITA_DYNAREC_FILES} ${VITA_GRAPHICS_FILES} ${VITA_HLEAUDIO_FILES} ${VITA_HLEGRAPHICS_FILES} ${VITA_INPUTMANAGER_FILES} ${VITA_UI_FILES} ${VITA_UTILITY_FILES})
 
+# N3DS(CTR)
+set (CTR_MAIN_FILES SysCTR/main.cpp)
+set (CTR_DEBUG_FILES SysCTR/Debug/DaedalusAssertCTR.cpp SysCTR/Debug/DBGConsoleCTR.cpp )
+set (CTR_DYNAREC_FILES SysCTR/DynaRec/CodeGeneratorCTR.cpp)
+set (CTR_GRAPHICS_FILES SysCTR/Graphics/GraphicsContextCTR.cpp SysCTR/Graphics/NativeTextureCTR.cpp)
+set (CTR_HLEGRAPHICS_FILES SysCTR/HLEGraphics/GraphicsPluginCTR.cpp SysCTR/HLEGraphics/RendererCTR.cpp)
+set (CTR_HLEAUDIO_FILES SysCTR/HLEAudio/AudioPluginCTR.cpp)
+set (CTR_INPUTMANAGER_FILES SysCTR/Input/InputManagerCTR.cpp)
+set (CTR_UTILITY_FILES SysCTR/Utility/ThreadCTR.cpp SysCTR/Utility/IOCTR.cpp SysCTR/Utility/TimingCTR.cpp)
+set (CTR_BUILD ${CTR_DEBUG_FILES} ${CTR_DYNAREC_FILES} ${CTR_GRAPHICS_FILES} ${CTR_HLEAUDIO_FILES} ${CTR_HLEGRAPHICS_FILES} ${CTR_INPUTMANAGER_FILES} ${CTR_UI_FILES} ${CTR_UTILITY_FILES})
 
 if (PSP_RELEASE)
 	message("PSP Release Build..")
@@ -292,3 +302,57 @@ if (VITA_RELEASE)
 	)
 
 endif (VITA_RELEASE)
+
+if (CTR_RELEASE)
+	message("N3DS Release Build..")
+
+	set(CMAKE_EXE_LINKER_FLAGS "-L${DEVKITPRO}/libctru/lib -L${DEVKITPRO}/picaGL/lib -L${DEVKITPRO}/portlibs/3ds/lib -specs=3dsx.specs -Wl,--gc-sections")
+
+	include_directories(${DEVKITPRO}/libctru/include ${DEVKITPRO}/picaGL/include ${DEVKITPRO}/portlibs/3ds/include)
+
+	add_definitions("-DDAEDALUS_CTR" "-D_3DS")
+
+	# Build Daedalus Lib
+	add_library(daedalus STATIC
+		${BUILD}
+		${DEBUG_ONLY}
+		${CTR_BUILD}
+	)
+
+	target_include_directories(daedalus PRIVATE
+		${PROJECT_SOURCE_DIR}
+		${PROJECT_SOURCE_DIR}/SysCTR/Include
+		${PROJECT_SOURCE_DIR}/Config/Dev
+	)
+
+	target_link_libraries(daedalus
+		z
+		png
+	)
+
+	# Build and Link Executable
+	add_executable(${PROJECT_NAME}.elf
+		${CTR_MAIN_FILES}
+		${CTR_INPUTMANAGER_FILES}
+	)
+
+	target_include_directories(${PROJECT_NAME}.elf PRIVATE
+		${PROJECT_SOURCE_DIR}
+		${PROJECT_SOURCE_DIR}/SysCTR/Include
+		${PROJECT_SOURCE_DIR}/Config/Dev
+	)
+
+	target_link_libraries(${PROJECT_NAME}.elf
+		daedalus
+		picaGL
+		-lctru
+		-lm
+	)
+
+	add_custom_command(
+		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.3dsx
+		COMMAND 3dsxtool ${PROJECT_NAME}.elf {PROJECT_NAME}.3dsx
+		DEPENDS ${PROJECT_NAME}.elf
+	)
+
+endif (CTR_RELEASE)

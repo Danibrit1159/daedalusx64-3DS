@@ -31,7 +31,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #if defined(DAEDALUS_VITA)
 #include <psp2/kernel/threadmgr.h>
 #endif
-
+#if defined(DAEDALUS_CTR)
+#include <3ds.h>
+#endif
 
 #if defined(DAEDALUS_W32)
 
@@ -143,6 +145,40 @@ public:
 	pthread_mutex_t  mMutex;
 };
 
+#elif defined(DAEDALUS_CTR)
+
+class Mutex
+{
+public:
+
+	Mutex()
+	{
+		svcCreateMutex(&mMutex, false);
+	}
+
+	explicit Mutex( const char * name )
+	{
+		svcCreateMutex(&mMutex, false);
+	}
+
+	~Mutex()
+	{
+		svcCloseHandle(mMutex);
+	}
+
+	void Lock()
+	{
+		svcWaitSynchronization(mMutex, U64_MAX);
+	}
+
+	void Unlock()
+	{
+		svcReleaseMutex(mMutex);
+	}
+
+public:
+	Handle mMutex;
+};
 
 #else
 

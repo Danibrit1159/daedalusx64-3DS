@@ -89,7 +89,7 @@ namespace IO
 	typedef SceUID FindHandleT;
 #elif defined( DAEDALUS_W32 )
 	typedef intptr_t FindHandleT;
-#elif defined( DAEDALUS_OSX ) || defined( DAEDALUS_LINUX )
+#elif defined( DAEDALUS_OSX ) || defined( DAEDALUS_LINUX ) || defined( DAEDALUS_CTR )
 	typedef void * FindHandleT;
 #else
 #error Need to define FindHandleT for this platform

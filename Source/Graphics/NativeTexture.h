@@ -35,6 +35,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <vitaGL.h>
 #endif
 
+#ifdef DAEDALUS_CTR
+#include <GL/picaGL.h>
+#endif
+
 class c32;
 
 class CNativeTexture : public CRefCounted
@@ -64,7 +68,7 @@ class CNativeTexture : public CRefCounted
 		inline const void *				GetData() const					{ return mpData; }
 		inline void *					GetData()						{ return mpData; }
 
-#if defined(DAEDALUS_PSP) || defined(DAEDALUS_VITA)
+#if defined(DAEDALUS_PSP) || defined(DAEDALUS_VITA) || defined(DAEDALUS_CTR)
 		inline f32						GetScaleX() const				{ return mScale.x; }
 		inline f32						GetScaleY() const				{ return mScale.y; }
 #endif
@@ -83,11 +87,11 @@ class CNativeTexture : public CRefCounted
 		void *				mpData;
 		void *				mpPalette;
 
-#if defined(DAEDALUS_GL) || defined(DAEDALUS_VITA)
+#if defined(DAEDALUS_GL) || defined(DAEDALUS_VITA) || defined(DAEDALUS_CTR)
 		GLuint				mTextureId;
 #endif
 
-#if defined(DAEDALUS_PSP) || defined(DAEDALUS_VITA)
+#if defined(DAEDALUS_PSP) || defined(DAEDALUS_VITA) || defined(DAEDALUS_CTR)
 		v2					mScale;
 		bool				mIsDataVidMem;
 		bool				mIsPaletteVidMem;

@@ -46,14 +46,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <vector>
 
 #ifdef DAEDALUS_VITA
+#include <vitaGL.h>
+#endif
+
+#if defined( DAEDALUS_VITA ) || defined( DAEDALUS_CTR )
+#define GU_PROJECTION GL_PROJECTION
 struct ScePspFMatrix4
 {
 	float m[16];
 };
-
-#include <vitaGL.h>
 extern void sceGuSetMatrix(int type, const ScePspFMatrix4 * mtx);
-#define GU_PROJECTION GL_PROJECTION
 #endif
 
 // Vertex allocation.
@@ -71,7 +73,7 @@ struct TempVerts
 
 	~TempVerts()
 	{
-#if defined(DAEDALUS_GL) || defined(DAEDALUS_VITA)
+#if defined(DAEDALUS_GL) || defined(DAEDALUS_VITA) || defined(DAEDALUS_CTR)
 		free(Verts);
 #endif
 	}
@@ -82,7 +84,7 @@ struct TempVerts
 #ifdef DAEDALUS_PSP
 		Verts = static_cast<DaedalusVtx*>(sceGuGetMemory(bytes));
 #endif
-#if defined(DAEDALUS_GL) || defined(DAEDALUS_VITA)
+#if defined(DAEDALUS_GL) || defined(DAEDALUS_VITA) || defined(DAEDALUS_CTR)
 		Verts = static_cast<DaedalusVtx*>(malloc(bytes));
 #endif
 
@@ -334,7 +336,7 @@ void BaseRenderer::InitViewport()
 		mN64ToScreenTranslate.y += (FastRand() & 3);
 	}
 
-#if defined(DAEDALUS_GL) || defined(DAEDALUS_VITA)
+#if defined(DAEDALUS_GL) || defined(DAEDALUS_VITA) || defined(DAEDALUS_CTR)
 	f32 w = mScreenWidth;
 	f32 h = mScreenHeight;
 
@@ -395,7 +397,7 @@ void BaseRenderer::UpdateViewport()
 
 	sceGuOffset(vx - (vp_w/2),vy - (vp_h/2));
 	sceGuViewport(vx + vp_x, vy + vp_y, vp_w, vp_h);
-#elif defined(DAEDALUS_GL) || defined(DAEDALUS_VITA)
+#elif defined(DAEDALUS_GL) || defined(DAEDALUS_VITA) || defined(DAEDALUS_CTR)
 	glViewport(vp_x, (s32)mScreenHeight - (vp_h + vp_y), vp_w, vp_h);
 #else
 #ifdef DAEDALUS_DEBUG_CONSOLE
@@ -1727,7 +1729,7 @@ void BaseRenderer::UpdateTileSnapshots( u32 tile_idx )
 		// LOD is disabled - use two textures
 		UpdateTileSnapshot( 1, tile_idx + 1 );
 	}
-#elif defined(DAEDALUS_GL) || defined(RDP_USE_TEXEL1) || defined(DAEDALUS_VITA)
+#elif defined(DAEDALUS_GL) || defined(RDP_USE_TEXEL1) || defined(DAEDALUS_VITA) || defined(DAEDALUS_CTR)
 // FIXME(strmnnrmn): What's RDP_USE_TEXEL1? Can we remove it?
 
 	if (gRDPOtherMode.cycle_type == CYCLE_2CYCLE)
@@ -1855,7 +1857,7 @@ void BaseRenderer::UpdateTileSnapshot( u32 index, u32 tile_idx )
 #ifdef DAEDALUS_PSP
 	u32 mode_u {(u32)((rdp_tile.clamp_s | (rdp_tile.mask_s == 0)) ? GU_CLAMP : GU_REPEAT)};
 	u32 mode_v {(u32)((rdp_tile.clamp_t | (rdp_tile.mask_t == 0)) ? GU_CLAMP : GU_REPEAT)};
-#elif defined(DAEDALUS_VITA)
+#elif defined(DAEDALUS_VITA) || defined(DAEDALUS_CTR)
 	u32 mode_u {(u32)((rdp_tile.clamp_s | (rdp_tile.mask_s == 0)) ? GL_CLAMP_TO_EDGE : GL_REPEAT)};
 	u32 mode_v {(u32)((rdp_tile.clamp_t | (rdp_tile.mask_t == 0)) ? GL_CLAMP_TO_EDGE : GL_REPEAT)};
 #endif
@@ -1877,7 +1879,7 @@ void BaseRenderer::UpdateTileSnapshot( u32 index, u32 tile_idx )
 		//
 #ifdef DAEDALUS_PSP
 		mode_u = g_ROM.ZELDA_HACK ? GU_CLAMP : GU_REPEAT;
-#elif defined(DAEDALUS_VITA)
+#elif defined(DAEDALUS_VITA) || defined(DAEDALUS_CTR)
 		mode_u = g_ROM.ZELDA_HACK ? GL_CLAMP_TO_EDGE : GL_REPEAT;
 #endif
 	}
@@ -1885,7 +1887,7 @@ void BaseRenderer::UpdateTileSnapshot( u32 index, u32 tile_idx )
 	if( tile_size.GetHeight() > ti.GetHeight() )
 #ifdef DAEDALUS_PSP
 		mode_v = GU_REPEAT;
-#elif defined(DAEDALUS_VITA)
+#elif defined(DAEDALUS_VITA) || defined(DAEDALUS_CTR)
 		mode_v = GL_REPEAT;
 #endif
 	mTexWrap[ index ].u = mode_u;
@@ -1934,7 +1936,7 @@ inline void FixUV(u32 * wrap, s16 * c0_, s16 * c1_, s16 offset, s32 size)
 	// Many texrects already have GU_CLAMP set, so avoid some work.
 #ifdef DAEDALUS_PSP
 	if (*wrap != GU_CLAMP && size > 0)
-#elif defined(DAEDALUS_VITA)
+#elif defined(DAEDALUS_VITA) || defined(DAEDALUS_CTR)
 	if (*wrap != GL_CLAMP_TO_EDGE && size > 0)
 #endif
 	{
@@ -1958,7 +1960,7 @@ inline void FixUV(u32 * wrap, s16 * c0_, s16 * c1_, s16 offset, s32 size)
 		{
 #ifdef DAEDALUS_PSP
 			*wrap = GU_CLAMP;
-#elif defined(DAEDALUS_VITA)
+#elif defined(DAEDALUS_VITA) || defined(DAEDALUS_CTR)
 			*wrap = GL_CLAMP_TO_EDGE;
 #endif
 		}
@@ -1981,7 +1983,7 @@ void BaseRenderer::PrepareTexRectUVs(TexCoord * puv0, TexCoord * puv1)
 	if (rdp_tile.mirror_s)	size_x *= 2;
 	if (rdp_tile.mirror_t)	size_y *= 2;
 
-#if defined(DAEDALUS_GL) || defined(DAEDALUS_VITA)
+#if defined(DAEDALUS_GL) || defined(DAEDALUS_VITA) || defined(DAEDALUS_CTR)
 	// If using shift, we need to take it into account here.
 	offset.s = ApplyShift(offset.s, rdp_tile.shift_s);
 	offset.t = ApplyShift(offset.t, rdp_tile.shift_t);
@@ -2040,7 +2042,7 @@ void BaseRenderer::SetScissor( u32 x0, u32 y0, u32 x1, u32 y1 )
 	// N.B. Think the arguments are x0,y0,x1,y1, and not x,y,w,h as the docs describe
 	//printf("%d %d %d %d\n", s32(screen_tl.x),s32(screen_tl.y),s32(screen_br.x),s32(screen_br.y));
 	sceGuScissor( l, t, r, b );
-#elif defined(DAEDALUS_GL) || defined(DAEDALUS_VITA)
+#elif defined(DAEDALUS_GL) || defined(DAEDALUS_VITA) || defined(DAEDALUS_CTR)
 	// NB: OpenGL is x,y,w,h. Errors if width or height is negative, so clamp this.
 	s32 w {Max<s32>( r - l, 0 )};
 	s32 h {Max<s32>( b - t, 0 )};
