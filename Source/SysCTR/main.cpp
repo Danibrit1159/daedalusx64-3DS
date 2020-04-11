@@ -33,6 +33,7 @@
 
 #define DAEDALUS_CTR_PATH(p)	"sdmc:/3ds/DaedalusX64/" p
 
+EAudioPluginMode enable_audio = APM_ENABLED_SYNC;
 /*extern "C" {
 
 int __stacksize__ = 4 * 1024;
@@ -74,8 +75,6 @@ static void Initialize()
 
 void HandleEndOfFrame()
 {
-	pglSwapBuffers();
-
 	if(hidKeysDown() == KEY_ZL)
 		CPU_Halt("Exiting");
 }
