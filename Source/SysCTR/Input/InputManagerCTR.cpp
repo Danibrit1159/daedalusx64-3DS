@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Core/CPU.h"
 #include <3ds.h>
+#include <stdio.h>
 
 class IInputManager : public CInputManager
 {
@@ -82,6 +83,9 @@ void IInputManager::GetGamePadStatus()
 
 void IInputManager::GetState( OSContPad pPad[4] )
 {
+	circlePosition cstick;
+	circlePosition circlepad;
+
 	// Clear the initial state
 	for(u32 cont = 0; cont < 4; cont++)
 	{
@@ -92,29 +96,33 @@ void IInputManager::GetState( OSContPad pPad[4] )
 
 	hidScanInput();
 
+	hidCstickRead(&cstick);
+	hidCircleRead(&circlepad);
+	
+	pPad[0].stick_x = circlepad.dx / 2;
+	pPad[0].stick_y = circlepad.dy / 2;
+
 	if (hidKeysHeld() & KEY_A)		pPad[0].button |= A_BUTTON;
 	if (hidKeysHeld() & KEY_B)		pPad[0].button |= B_BUTTON;
 	if (hidKeysHeld() & KEY_ZR)		pPad[0].button |= Z_TRIG;
-	//if (hidKeysHeld() & KEY_A)		pPad[0].button |= Z_TRIG;		// For German keyboards :)
+	if (hidKeysHeld() & KEY_ZL)		pPad[0].button |= Z_TRIG;
+
 	if (hidKeysHeld() & KEY_L)		pPad[0].button |= L_TRIG;
 	if (hidKeysHeld() & KEY_R)		pPad[0].button |= R_TRIG;
 
 	if (hidKeysHeld() & KEY_START)		pPad[0].button |= START_BUTTON;
 
-	//if (hidKeysHeld() & KEY_A)		pPad[0].button |= U_JPAD;
-	//if (hidKeysHeld() & KEY_A)		pPad[0].button |= D_JPAD;
-	//if (hidKeysHeld() & KEY_A)		pPad[0].button |= L_JPAD;
-	//if (hidKeysHeld() & KEY_A)		pPad[0].button |= R_JPAD;
+	if (hidKeysHeld() & KEY_DUP)		pPad[0].button |= U_JPAD;
+	if (hidKeysHeld() & KEY_DDOWN)		pPad[0].button |= D_JPAD;
+	if (hidKeysHeld() & KEY_DLEFT)		pPad[0].button |= L_JPAD;
+	if (hidKeysHeld() & KEY_DRIGHT)		pPad[0].button |= R_JPAD;
 
-	/*if (hidKeysHeld() & KEY_A)		pPad[0].button |= U_CBUTTONS;
-	if (hidKeysHeld() & KEY_A)		pPad[0].button |= D_CBUTTONS;
-	if (hidKeysHeld() & KEY_A)		pPad[0].button |= L_CBUTTONS;
-	if (hidKeysHeld() & KEY_A)		pPad[0].button |= R_CBUTTONS;*/
+	if(cstick.dx > 40) 	pPad[0].button |= R_CBUTTONS;
+	if(cstick.dx < -40) pPad[0].button |= L_CBUTTONS;
 
-	if (hidKeysHeld() & KEY_LEFT)		pPad[0].stick_x = -80;
-	if (hidKeysHeld() & KEY_RIGHT)		pPad[0].stick_x = +80;
-	if (hidKeysHeld() & KEY_UP)		pPad[0].stick_y = +80;
-	if (hidKeysHeld() & KEY_DOWN)		pPad[0].stick_y = -80;
+	if(cstick.dy > -40) pPad[0].button |= D_CBUTTONS;
+	if(cstick.dy < 40) 	pPad[0].button |= U_CBUTTONS;
+
 }
 
 template<> bool	CSingleton< CInputManager >::Create()
