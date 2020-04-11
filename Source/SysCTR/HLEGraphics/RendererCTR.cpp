@@ -386,10 +386,21 @@ void RendererCTR::TexRect(u32 tile_idx, const v2 & xy0, const v2 & xy1, TexCoord
 	float scale_x {texture->GetScaleX()};
 	float scale_y {texture->GetScaleY()};
 
-	glDisableClientState(GL_COLOR_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glEnable(GL_TEXTURE_2D);
 
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glBegin(GL_TRIANGLE_STRIP);
+	glColor4f(1.0f,1.0f,1.0f,1.0f);
+	glTexCoord2f(uv0.x * scale_x, uv0.y * scale_y);
+	glVertex3f(screen0.x, screen0.y, depth);
+	glTexCoord2f(uv1.x * scale_x, uv0.y * scale_y);
+	glVertex3f(screen1.x, screen0.y, depth);
+	glTexCoord2f(uv0.x * scale_x, uv1.y * scale_y);
+	glVertex3f(screen0.x, screen1.y, depth);
+	glTexCoord2f(uv1.x * scale_x, uv1.y * scale_y);
+	glVertex3f(screen1.x, screen1.y, depth);
+	glEnd();
+
+	glDisable(GL_TEXTURE_2D);
 }
 
 void RendererCTR::TexRectFlip(u32 tile_idx, const v2 & xy0, const v2 & xy1, TexCoord st0, TexCoord st1)
@@ -417,10 +428,21 @@ void RendererCTR::TexRectFlip(u32 tile_idx, const v2 & xy0, const v2 & xy1, TexC
 	float scale_x {texture->GetScaleX()};
 	float scale_y {texture->GetScaleY()};
 
-	glDisableClientState(GL_COLOR_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glEnable(GL_TEXTURE_2D);
 
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glBegin(GL_TRIANGLE_STRIP);
+	glColor4f(1.0f,1.0f,1.0f,1.0f);
+	glTexCoord2f(uv0.x * scale_x, uv0.y * scale_y);
+	glVertex3f(screen0.x, screen0.y, depth);
+	glTexCoord2f(uv1.x * scale_x, uv0.y * scale_y);
+	glVertex3f(screen1.x, screen0.y, depth);
+	glTexCoord2f(uv0.x * scale_x, uv1.y * scale_y);
+	glVertex3f(screen0.x, screen1.y, depth);
+	glTexCoord2f(uv1.x * scale_x, uv1.y * scale_y);
+	glVertex3f(screen1.x, screen1.y, depth);
+	glEnd();
+
+	glDisable(GL_TEXTURE_2D);
 }
 
 void RendererCTR::FillRect(const v2 & xy0, const v2 & xy1, u32 color)
@@ -434,6 +456,14 @@ void RendererCTR::FillRect(const v2 & xy0, const v2 & xy1, u32 color)
 	
 	const f32 depth = gRDPOtherMode.depth_source ? mPrimDepth : 0.0f;
 	
+	glBegin(GL_TRIANGLE_STRIP);
+	glColor4ubv((GLubyte *)&color);
+	glVertex3f(screen0.x, screen0.y, depth);
+	glVertex3f(screen1.x, screen0.y, depth);
+	glVertex3f(screen0.x, screen1.y, depth);
+	glVertex3f(screen1.x, screen1.y, depth);
+	glEnd();
+
 	glEnableClientState(GL_COLOR_ARRAY);
 }
 
@@ -458,10 +488,22 @@ void RendererCTR::Draw2DTexture(f32 x0, f32 y0, f32 x1, f32 y1,
 
 	const f32 depth = 0.0f;
 
-	glDisableClientState(GL_COLOR_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glEnable(GL_TEXTURE_2D);
 
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glBegin(GL_TRIANGLE_STRIP);
+	glColor4f(1.0f,1.0f,1.0f,1.0f);
+	glTexCoord2f(u0, v0);
+	glVertex3f(sx0, sy0, depth);
+	glTexCoord2f(u1, v0);
+	glVertex3f(sx1, sy0, depth);
+	glTexCoord2f(u0, v1);
+	glVertex3f(sx0, sy1, depth);
+	glTexCoord2f(u1, v1);
+	glVertex3f(sx1, sy1, depth);
+	glEnd();
+
+	glDisable(GL_TEXTURE_2D);
+
 }
 
 void RendererCTR::Draw2DTextureR(f32 x0, f32 y0, f32 x1, f32 y1,
@@ -485,10 +527,21 @@ void RendererCTR::Draw2DTextureR(f32 x0, f32 y0, f32 x1, f32 y1,
 
 	const f32 depth = 0.0f;
 
-	glDisableClientState(GL_COLOR_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glEnable(GL_TEXTURE_2D);
 
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glBegin(GL_TRIANGLE_STRIP);
+	glColor4f(1.0f,1.0f,1.0f,1.0f);
+	glTexCoord2f(0, 0);
+	glVertex3f(N64ToScreenX(x0), N64ToScreenY(y0), depth);
+	glTexCoord2f(s, 0);
+	glVertex3f(N64ToScreenX(x1), N64ToScreenY(y1), depth);
+	glTexCoord2f(s, t);
+	glVertex3f(N64ToScreenX(x2), N64ToScreenY(y2), depth);
+	glTexCoord2f(0, t);
+	glVertex3f(N64ToScreenX(x3), N64ToScreenY(y3), depth);
+	glEnd();
+
+	glDisable(GL_TEXTURE_2D);
 }
 
 bool CreateRenderer()
